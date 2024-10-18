@@ -20,5 +20,10 @@ namespace WpfApp2
         {
             InitializeComponent();
         }
+
+        private void MyButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Hello World!","AAA");
+        }
     }
 }
