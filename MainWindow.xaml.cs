@@ -1,13 +1,5 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WpfApp2
 {
@@ -21,9 +13,27 @@ namespace WpfApp2
             InitializeComponent();
         }
 
-        private void MyButton_Click(object sender, RoutedEventArgs e)
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            MessageBox.Show("Hello World!","AAA");
+            var targetTextBox = sender as TextBox;
+            int amount;
+            bool success = int.TryParse(targetTextBox.Text, out amount);
+            if (!success)
+            {
+                MessageBox.Show("請輸入正整數", "輸入錯誤");
+            }
+            else if (amount <= 0)
+            {
+                MessageBox.Show("請輸入正整數", "輸入錯誤");
+            }
+            else
+            {
+                var targetStackPanel = targetTextBox.Parent as StackPanel;
+                var targetLabel = targetStackPanel.Children[0] as Label;
+                var drinkName = targetLabel.Content.ToString();
+
+                ResultTextBlock.Text += $"您選擇的飲料是：{drinkName}，數量是：{amount}\n";
+            }
         }
     }
 }
