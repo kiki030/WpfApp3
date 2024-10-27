@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Microsoft.Win32;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -11,16 +12,7 @@ namespace WpfApp2
     /// </summary>
     public partial class MainWindow : Window
     {
-        Dictionary<string, int> drinks = new Dictionary<string, int>
-        {
-            { "紅茶大杯", 60 },
-            { "紅茶小杯", 40 },
-            { "綠茶大杯", 60 },
-            { "綠茶小杯", 40 },
-            { "可樂大杯", 50 },
-            { "可樂小杯", 30 },
-            { "咖啡大杯", 70 },
-        };
+        Dictionary<string, int> drinks = new Dictionary<string, int>();
 
         Dictionary<string, int> orders = new Dictionary<string, int>();
         string takeout = " ";
@@ -28,7 +20,25 @@ namespace WpfApp2
         {
             InitializeComponent();
 
+            AddNewDrink(drinks);
+
             DisplayDrinkMenu(drinks);
+        }
+
+        private void AddNewDrink(Dictionary<string, int> drinks)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "CSV檔案|*.csv|文字檔|*.txt|所有檔案|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            { 
+                string FileName = openFileDialog.FileName;
+                ReadDrinksFromFile(FileName, drinks);
+            }
+        }
+
+        private void ReadDrinksFromFile(string fileName, Dictionary<string, int> drinks)
+        {
+            throw new NotImplementedException();
         }
 
         private void DisplayDrinkMenu(Dictionary<string, int> drinks)
