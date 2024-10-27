@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -29,6 +30,7 @@ namespace WpfApp2
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "CSV檔案|*.csv|文字檔|*.txt|所有檔案|*.*";
+            openFileDialog.Title = "選擇飲料菜單檔案";
             if (openFileDialog.ShowDialog() == true)
             { 
                 string FileName = openFileDialog.FileName;
@@ -37,8 +39,22 @@ namespace WpfApp2
         }
 
         private void ReadDrinksFromFile(string fileName, Dictionary<string, int> drinks)
-        {
-            throw new NotImplementedException();
+        {   
+            try
+            {
+                string[] lines = File.ReadAllLines(fileName);
+                foreach (var line in lines)
+                {
+                    string[] tokens = line.Split(',');
+                    string drinkName = tokens[0];
+                    int price = Convert.ToInt32(tokens[1]);
+                    drinks.Add(drinkName, price);
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show($"讀取檔案錯誤:{ex.Message}");
+            }
         }
 
         private void DisplayDrinkMenu(Dictionary<string, int> drinks)
@@ -133,8 +149,12 @@ namespace WpfApp2
             double total = 0.0;
             double sellPrice = 0.0;
 
-            ResultTextBlock.Text += $"取餐方式: {takeout}\n";
-            
+            string orderMessage = "";
+
+            DateTime now = DateTime.Now;
+            orderMessage += $"訂購時間: {now.ToString("yyyy/MM/dd HH:mm:ss")}";
+            orderMessage += $"取餐方式: {takeout}\n";
+
             int num = 1;
             foreach (var item in orders)
             {
@@ -144,7 +164,7 @@ namespace WpfApp2
 
                 int subTotal = price * quantity;
                 total += subTotal;
-                ResultTextBlock.Text += $"{num}.{drinkName} x {quantity}杯，共{subTotal}元\n";
+                orderMessage += $"{num}.{drinkName} x {quantity}杯，共{subTotal}元\n";
                 num++;
             }
 
@@ -164,9 +184,33 @@ namespace WpfApp2
                 sellPrice = total;
             }
 
-            ResultTextBlock.Text += $"總金額: {total}元\n";
-            ResultTextBlock.Text += $"{discoutMessage}，實付金額: {sellPrice}元\n";
+            orderMessage += $"總金額: {total}元\n";
+            orderMessage += $"{discoutMessage}，實付金額: {sellPrice}元\n";
+            ResultTextBlock.Text = orderMessage;
+            SaveOrder(orderMessage);
         }
-        
+
+        private void SaveOrder(string orderMessage)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "文字檔案|*.txt|所有檔案|*.*";
+            saveFileDialog.Title = "儲存訂單";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                string fileName = saveFileDialog.FileName;
+                try
+                {
+                    using (StreamWriter sw = new StreamWriter(fileName))
+                    {
+                        sw.Write(orderMessage);
+                    }
+                    MessageBox.Show("訂單已成功儲存。");
+                }
+                catch (IOException ex)
+                {
+                    MessageBox.Show($"儲存檔案時發生錯誤: {ex.Message}");
+                }
+            }
+        }
     }
 }
