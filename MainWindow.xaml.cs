@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace WpfApp2
@@ -16,7 +17,8 @@ namespace WpfApp2
             {" 綠茶大杯", 60},
             {" 綠茶小杯", 40},
             {" 可樂大杯", 50},
-            {" 可樂小杯", 30}
+            {" 可樂小杯", 30},
+            {" 咖啡大杯", 70},
         };
         public MainWindow()
         {
@@ -27,13 +29,15 @@ namespace WpfApp2
 
         private void DisplayDrinkMenu(Dictionary<string, int> drinks)
         {
+            stackpanel_DrinkMenu.Children.Clear();
+            stackpanel_DrinkMenu.Height = drinks.Count * 40;
             foreach (var drink in drinks)
             {
                 var sp = new StackPanel
                 {
                     Orientation = Orientation.Horizontal,
-                    Margin = new Thickness(3),
-                    Height = 40,
+                    Margin = new Thickness(2),
+                    Height = 30,
                     VerticalAlignment = VerticalAlignment.Center,
                     Background = Brushes.AliceBlue
                 };
@@ -58,16 +62,24 @@ namespace WpfApp2
                     VerticalAlignment = VerticalAlignment.Center
                 };
 
-                var tb = new Label
+                var lb = new Label
                 {
                     Width = 30,
                     Content = "0",
                     FontFamily = new FontFamily("微軟正黑體"),
-                    FontSize=18,
+                    FontSize = 18,
                 };
+
+                Binding myBinding = new Binding("Value")
+                {
+                    Source = sl,
+                    Mode = BindingMode.OneWay
+                };
+                lb.SetBinding(ContentProperty, myBinding);
 
                 sp.Children.Add(cb);
                 sp.Children.Add(sl);
+                sp.Children.Add(lb);
 
                 stackpanel_DrinkMenu.Children.Add(sp);
             }
